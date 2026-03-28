@@ -11,48 +11,6 @@ import { point } from "@turf/helpers";
 // CRITICAL: Leaflet will look broken without its core CSS
 import 'leaflet/dist/leaflet.css';
 
-// Custom component to handle the Heatmap safely in React
-function HeatmapLayer({ points }) {
-    const map = useMap();
-    const heatLayerRef = React.useRef(null);
-
-    useEffect(() => {
-        let isMounted = true;
-        window.L = L;
-
-        import('leaflet.heat/dist/leaflet-heat.js').then(() => {
-            if (!isMounted) return;
-
-            heatLayerRef.current = L.heatLayer(points, {
-                radius: 40,
-                blur: 25,
-                maxZoom: 12,
-                minOpacity: 0.4,
-                max: 1.0,
-                pane: "overlayPane",
-                gradient: {
-                    0.2: "#0b3d91",
-                    0.4: "#1d4ed8",
-                    0.6: "#22c55e",
-                    0.8: "#facc15",
-                    1.0: "#f97316"
-                }
-            });
-
-            heatLayerRef.current.addTo(map);
-        }).catch(err => console.error("Failed to load heatmap", err));
-
-        return () => {
-            isMounted = false;
-            if (heatLayerRef.current) {
-                map.removeLayer(heatLayerRef.current);
-                heatLayerRef.current = null;
-            }
-        };
-    }, [map, points]);
-
-    return null;
-}
 
 // Custom Zoom Control Component
 function CustomZoomControl() {
@@ -120,37 +78,6 @@ const createPremiumPin = (iconClass, colorClass) => {
     });
 };
 
-// Custom Jeep Icon — Clean yellow marker with Phosphor car icon
-const jeepIcon = L.divIcon({
-    className: 'jeep-marker-wrapper',
-    html: `<div style="
-        width: 32px; height: 32px;
-        background: #F5A623;
-        border: 2.5px solid #fff;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 2px 8px rgba(212, 162, 90, 0.6), 0 0 16px rgba(245, 166, 35, 0.3);
-    "><i class="ph-fill ph-jeep" style="font-size: 16px; color: #fff;"></i></div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16]
-});
-
-// Tactical Ranger Jeep Icon — Sharp Red for Patrol Units
-const rangerJeepIcon = L.divIcon({
-    className: 'jeep-marker-wrapper',
-    html: `<div style="
-        width: 32px; height: 32px;
-        background: #ef4444;
-        border: 2.5px solid #fff;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4), 0 0 20px rgba(239, 68, 68, 0.3);
-    "><i class="ph-fill ph-shield-check" style="font-size: 16px; color: #fff;"></i></div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16]
-});
 
 // Stunning Custom Teardrop Sighting Pin (Paw Print)
 const wildlifeIcon = createPremiumPin("ph-paw-print", "pin-sighting");
@@ -190,7 +117,7 @@ const mockEntrances = [
         name: "Palatupana Entrance",
         desc: "Primary Main Entrance near Kirinda. Best for Block I.",
         img: "/images/palatupana_gate_1771811459470.png",
-        googleMaps: "https://goo.gl/maps/PalatupanaGate"
+        googleMaps: "https://www.google.com/maps/dir/?api=1&destination=6.258333,81.358333"
     },
     {
         lat: 6.383333,
@@ -198,7 +125,7 @@ const mockEntrances = [
         name: "Katagamuwa Entrance",
         desc: "Northern access from Kataragama to Blocks I & II.",
         img: "/images/katagamuwa_gate_1771811483777.png",
-        googleMaps: "https://goo.gl/maps/KatagamuwaGate"
+        googleMaps: "https://www.google.com/maps/dir/?api=1&destination=6.383333,81.283333"
     },
     {
         lat: 6.433333,
@@ -206,7 +133,7 @@ const mockEntrances = [
         name: "Galge Entrance",
         desc: "Western side on Buttala–Kataragama road. Accesses Blocks III & V.",
         img: "/images/galge_gate_1771811529330.png",
-        googleMaps: "https://goo.gl/maps/GalgeGate"
+        googleMaps: "https://www.google.com/maps/dir/?api=1&destination=6.433333,81.266667"
     }
 ];
 
@@ -944,59 +871,6 @@ export default function YalaMap({ isDarkMode, jeeps, sightings = [], activeFilte
                 </Marker>
             ))}
 
-            {/* Render Moving Jeeps, Congestion Rings, and their Trails — only if jeeps filter is active */}
-            {activeFilters.includes('jeeps') && jeeps.map(jeep => {
-                const isRangerMode = activeFilters.includes('ranger-mode');
-                return (
-                    <React.Fragment key={jeep.id}>
-                        {/* Tactical Halo for Jeeps in Ranger Mode */}
-                        {isRangerMode && (
-                            <Circle 
-                                center={[jeep.lat, jeep.lng]}
-                                radius={40}
-                                pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.05, weight: 1, dashArray: '4, 4' }}
-                            />
-                        )}
-
-                        {jeep.trail && jeep.trail.length > 1 && (
-                            <Polyline 
-                                positions={jeep.trail} 
-                                pathOptions={{ 
-                                    color: isRangerMode ? '#ef4444' : '#F5A623', 
-                                    weight: 2, 
-                                    opacity: 0.4,
-                                    dashArray: '5, 10' 
-                                }} 
-                            />
-                        )}
-
-                        <Marker position={[jeep.lat, jeep.lng]} icon={isRangerMode ? rangerJeepIcon : jeepIcon}>
-                            <Popup>
-                                <div style={{fontFamily: 'Outfit', minWidth: '150px'}}>
-                                    <div style={{fontWeight: 'bold', fontSize: '16px', marginBottom: '4px'}}>
-                                        {isRangerMode ? '🛡️ PATROL UNIT ' : '🚙 Jeep '}{jeep.id}
-                                    </div>
-                                    <div style={{fontSize: '12px', color: '#6b7280', marginBottom: '4px'}}>
-                                        {jeep.block || 'Unknown Block'}
-                                    </div>
-                                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px'}}>
-                                        <span>{jeep.speed > 15 ? '🚀' : jeep.speed > 8 ? '🚗' : '🐢'}</span>
-                                        <span>{jeep.speed} km/h</span>
-                                    </div>
-                                    <div style={{fontSize: '11px', color: isRangerMode ? '#ef4444' : '#10b981', marginTop: '4px'}}>
-                                        ● {isRangerMode ? 'COMMAND LINK ACTIVE' : 'Live tracking active'}
-                                    </div>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    </React.Fragment>
-                );
-            })}
-
-            {/* Heatmap (Toggleable) - Driven dynamically by Live Jeep coordinates */}
-            {activeFilters.includes('heatmap') && (
-                <HeatmapLayer key="heatmap-layer" points={jeeps.map(j => [j.lat, j.lng, 0.8])} />
-            )}
 
             {/* Zone Info Panel (Appears only when a zone is clicked) */}
             {selectedZone && (

@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const jeepSchema = new mongoose.Schema({
   jeepId: { type: String, required: true, unique: true },
   driverName: String,

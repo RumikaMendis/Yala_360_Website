@@ -4,14 +4,11 @@ export default function MapFilters({ activeFilters, toggleFilter, hideUI, setHid
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const filters = [
-        { id: 'jeeps', label: 'LIVE JEEPS', icon: 'ph-car' },
         { id: 'sightings', label: 'RECENT SIGHTINGS', icon: 'ph-binoculars' },
         { id: 'hotels', label: 'HOTELS & DINING', icon: 'ph-fork-knife' },
         { id: 'entrances', label: 'ENTRANCES', icon: 'ph-signpost' },
         { id: 'attractions', label: 'ATTRACTIONS', icon: 'ph-camera' },
         { id: 'resting', label: 'RESTING PLACES', icon: 'ph-coffee' },
-        { id: 'heatmap', label: 'HEATMAP', icon: 'ph-flame' },
-        { id: 'ranger-mode', label: 'RANGER VIEW', icon: 'ph-shield' }
     ];
 
     return (

@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const zoneSchema = new mongoose.Schema({
   name: { type: String, required: true }, // "Leopard Breeding Area"
   type: { 

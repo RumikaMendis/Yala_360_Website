@@ -50,6 +50,10 @@
 /* Modern block styling */
 .leaflet-interactive {
     transition: all 0.3s ease;
+    /* This "paint-order" ensures the stroke is drawn under the fill,
+       creating a tighter fit between blocks */
+    paint-order: markers fill stroke;
+    stroke-linejoin: round;
 }
 
 /* Hide default leaflet borders */

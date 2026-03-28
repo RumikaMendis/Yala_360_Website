@@ -1,15 +1,27 @@
+console.log('Starting server.js...');
 const express = require('express');
+console.log('Express loaded');
 const http = require('http');
+console.log('HTTP loaded');
 const { Server } = require('socket.io');
+console.log('Socket.io loaded');
 const cors = require('cors');
+console.log('CORS loaded');
 const dotenv = require('dotenv');
+console.log('Dotenv loaded');
 const connectDB = require('./config/db');
+console.log('ConnectDB loaded');
 
 // Load environment variables
 dotenv.config();
+console.log('Dotenv configured');
 
 // Connect to MongoDB
-connectDB();
+if (process.env.MONGODB_URI && !process.env.MONGODB_URI.includes('<username>')) {
+  connectDB();
+} else {
+  console.log('Skipping MongoDB connection due to placeholder URI');
+}
 
 const app = express();
 const server = http.createServer(app);

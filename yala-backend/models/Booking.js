@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const bookingSchema = new mongoose.Schema({
   bookingId: { type: String, unique: true },
   touristName: String,
